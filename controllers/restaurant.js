@@ -1,21 +1,11 @@
-const Hospital = require('../models/Restaurant');
-const vacCenter = require('../models/VacCenter');
+const Restaurant = require('../models/Restaurant');
 
 
-exports.getVacCenters = (req,res,next)=>{
-    vacCenter.getAll((err,data )=>{
-        if(err)
-            res.status(500).send({
-        message: err.message || "Some error occurred while retrieving Vaccine Centers."
-    });
-    else res.send(data);
-    });
-};
 
-//@desc Get all hospitals
-//@route GET /api/v1/hospitals
+//@desc Get all Restaurants
+//@route GET /api/v1/restaurants
 //@access Public
-exports.getHospitals = async (req,res,next) => {
+exports.getRestaurants = async (req,res,next) => {
     let query;
 
     const reqQuery={...req.query};
@@ -26,7 +16,7 @@ exports.getHospitals = async (req,res,next) => {
     console.log(reqQuery);
     let queryStr=JSON.stringify(req.query);
     queryStr=queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match=>`$${match}`);
-    query = Hospital.find(JSON.parse(queryStr)).populate('appointments');
+    query = Restaurant.find(JSON.parse(queryStr)).populate('reservations');
 
     if(req.query.select){
         const fields=req.query.select.split(',').join(' ');
@@ -50,10 +40,10 @@ exports.getHospitals = async (req,res,next) => {
     
    
     try {
-        const total = await Hospital.countDocuments();
+        const total = await Restaurant.countDocuments();
         query = query.skip(startIndex).limit(limit);
         //Execute query
-        const hospitals = await query;
+        const restaurants = await query;
     
         //Pagination result
         const pagination={};
@@ -70,67 +60,67 @@ exports.getHospitals = async (req,res,next) => {
         }
 
 
-        res.status(200).json({success:true, count: hospitals.length, data:hospitals});
+        res.status(200).json({success:true, count: restaurants.length, data:restaurants});
     } catch (err) {
         res.status(400).json({success:false});
     }
 
 };
 
-//@desc Get single hospital
-//@route GET /api/v1/hospitals/:id
+//@desc Get single restaurant
+//@route GET /api/v1/restaurants/:id
 //@access Public
-exports.getHospital = async (req,res,next) => {
+exports.getRestaurant = async (req,res,next) => {
     try {
-        const  hospital = await Hospital.findById(req.params.id);
+        const  restaurant = await Restaurant.findById(req.params.id);
 
-        if(!hospital) {
+        if(!restaurant) {
             return res.status(400).json({success:false});
         }
 
-        res.status(200).json({success:true,data:hospital});
+        res.status(200).json({success:true,data:restaurant});
     } catch (error) {
         return res.status(400).json({success:false});
     }
     
 };
 
-//@desc Create a hospitals
-//@route POST /api/v1/hospitals/:id
+//@desc Create a restaurants
+//@route POST /api/v1/restaurants/:id
 //@access Private
-exports.createHospital = async (req,res,next) => {
-    const hospital = await Hospital.create(req.body);
-    res.status(201).json({success:true, data:hospital});
+exports.createRestaurant = async (req,res,next) => {
+    const restaurant = await Restaurant.create(req.body);
+    res.status(201).json({success:true, data:restaurant});
 };
 
-//@desc Update single hospital
-//@route PUT /api/v1/hospitals/:id
+//@desc Update single restaurant
+//@route PUT /api/v1/restaurants/:id
 //@access Private
-exports.updateHospital = async (req,res,next) => {
+exports.updateRestaurant = async (req,res,next) => {
     try {
-        const  hospital = await Hospital.findByIdAndUpdate(req.params.id, req.body, {
+        const  restaurant = await Restaurant.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         });
-        if(!hospital) {
+        if(!restaurant) {
             return res.status(400).json({success:false});
         }
 
-        res.status(200).json({success:true,data:hospital});
+        res.status(200).json({success:true,data:restaurant});
     } catch (error) {
         return res.status(400).json({success:false});
     }
     
 };
 
-//@desc Delete single hospital
-//@route DELETE /api/v1/hospitals/:id
+//@desc Delete single restaurant
+//@route DELETE /api/v1/restaurants/:id
 //@access Private
-exports.deleteHospital = async (req,res,next) => {
+exports.deleteRestaurant = async (req,res,next) => {
     try {
-        const hospital = await Hospital.findById(req.params.id);
+        const restaurant = await Restaurant.findById(req.params.id);
 
-        if(!hospital) {
+        if(!restaurant) {
             return res.status(400).json({success:false,message:`Bootcamp can not found with id of ${req.params.id}`});;
         }
         await hospital.deleteOne();
