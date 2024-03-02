@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const HospitalSchema = new mongoose.Schema({
+const RestaurantSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Please add a name'],
@@ -12,43 +12,31 @@ const HospitalSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add an address']
     },
-    district: {
-        type: String,
-        required: [true, 'Please add an district']
-    },
-    province: {
-        type: String,
-        required: [true, 'Please add an province']
-    },
-    postalcode: {
-        type: String,
-        required: [true, 'Please add an postalcode'],
-        maxlength: [5,'Postal Code can not be more than 5 digits']
-    },
     tel: {
-        type: String
-    },
-    region: {
         type: String,
-        required: [true, 'Please add a region']
-    }
+        required: [true, 'Please add an telephone number']
+    },
+   openningtime:{                                           // Do we need a closing time?
+        type: String,
+        required: [true, 'Please add a opentime'] 
+   }
 },{
     toJSON:{virtuals:true},
     toObject: {virtuals:true}
 });
-HospitalSchema.pre(`deleteOne`,{ document:true, query:false},async function(next){
-    console.log(`Appointments being removed from hospital ${this._id}`);
-    await this.model(`Appointment`).deleteMany({hospital: this._id});
+RestaurantSchema.pre(`deleteOne`,{ document:true, query:false},async function(next){
+    console.log(`Reservation being removed from restaurant ${this._id}`);
+    await this.model(`Reservation`).deleteMany({restaurant: this._id});
 
     next();
 });
 
-HospitalSchema.virtual('appointments',{
-    ref:'Appointment',
+RestaurantSchema.virtual('reservations',{
+    ref:'Reservation',
     localField:'_id',
-    foreignField : 'hospital',
+    foreignField : 'restaurant',
     justOne:false
 });
 
 
-module.exports = mongoose.model('Hospital', HospitalSchema);
+module.exports = mongoose.model('Restaurant', RestaurantSchema);
