@@ -153,7 +153,7 @@ exports.updateReservation = async (req,res,next)=>{
         });
     }catch(error){
         console.log(error);
-        return res.status(500).json({success:false,message:`Cannot update Reservation`});
+        return res.status(500).json({success:false,message:"Cannot update Reservation"});
     }
 };
 
