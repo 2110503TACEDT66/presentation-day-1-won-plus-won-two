@@ -123,7 +123,7 @@ exports.deleteRestaurant = async (req,res,next) => {
         if(!restaurant) {
             return res.status(400).json({success:false,message:`Bootcamp can not found with id of ${req.params.id}`});;
         }
-        await hospital.deleteOne();
+        await restaurant.deleteOne();
 
         res.status(200).json({success:true,data:{}});
     } catch (err) {

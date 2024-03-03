@@ -11,7 +11,7 @@ exports.getReservations = async (req,res,next)=>{
         });
     }else{
         if(req.params.restaurantId){
-           
+           console.log(req.params.restaurantId);
             query = Reservation.find({restaurant: req.params.restaurantId}).populate({
                 path:'restaurant',
                 select: 'name address tel',
