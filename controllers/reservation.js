@@ -4,62 +4,98 @@ const Restaurant = require('../models/Restaurant');
 
 exports.getReservations = async (req,res,next)=>{
     let query;
-    if(req.user.role !== 'admin'){
-        query=Reservation.find({user:req.user.id}).populate({
-            path:'restaurant',
-            select: 'name address tel'
-        });
-    }else{
-        if(req.params.restaurantId){
-           console.log(req.params.restaurantId);
-            query = Reservation.find({restaurant: req.params.restaurantId}).populate({
-                path:'restaurant',
-                select: 'name address tel',
-            });
-        }else{
-            query = Reservation.find().populate({
-                path:'restaurant',
-                select:'name address tel'
-            });
-        }
-        try{
-            const reservations = await query;
 
-            res.status(200).json({
-                success:true,
-                count: reservations.length,
-                data: reservations
+    // General users can see only their appointments!
+    if (req.user.role != 'admin') {
+        query = Reservation.find({ user: req.user.id }).populate({
+            path: 'restaurant',
+            select: 'name description tel'
+        });
+    } else { // If you are an admin, you can see all!
+
+        if (req.params.restaurantId) {
+            console.log(req.params.restaurantId);
+            query = Reservation.find({ restaurant: req.params.restaurantId }).populate({
+                path: 'restaurant',
+                select: 'name description tel'
             });
-        }catch(err){
-            console.log(err.stack);
-            return res.status(500).json({
-                success:false,
-                message: 'Cannot find Reservation'
+        } else {
+            query = Reservation.find().populate({
+                path: 'restaurant',
+                select: 'name description tel'
             });
         }
     }
+
+    try {
+        const reservations = await query;
+        res.status(200).json({
+            success: true,
+            count: reservations.length,
+            data: reservations
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Cannot find Reservation" });
+    }
+    // let query;
+    // if(req.user.role !== 'admin'){
+    //     query=Reservation.find({user:req.user.id}).populate({
+    //         path:'restaurant',
+    //         select: 'name address tel'
+    //     });
+    // }else{
+    //     if(req.params.restaurantId){
+    //        console.log(req.params.restaurantId);
+    //         query = Reservation.find({restaurant: req.params.restaurantId}).populate({
+    //             path:'restaurant',
+    //             select: 'name address tel',
+    //         });
+    //     }else{
+    //         query = Reservation.find().populate({
+    //             path:'restaurant',
+    //             select:'name address tel'
+    //         });
+    //     }
+    //     try{
+    //         const reservations = await query;
+
+    //         res.status(200).json({
+    //             success:true,
+    //             count: reservations.length,
+    //             data: reservations
+    //         });
+    //     }catch(err){
+    //         console.log(err.stack);
+    //         return res.status(500).json({
+    //             success:false,
+    //             message: 'Cannot find Reservation'
+    //         });
+    //     }
+    // }
 }
 
 
 exports.getReservation = async (req,res,next)=>{
-    try{
-        const reservation = await Reservation.findById(req.params.id).populate({
+    
+     try{
+         const reservation = await Reservation.findById(req.params.id).populate({
             path:'restaurant',
-            select:'name description tel'
-        });
+             select:'name description tel'
+         });
 
-        if(!reservation){
-            return res.status(404).json({success:false , message :`No reservation with the id of ${req.params.id}`});
-        }
+         if(!reservation){
+             return res.status(404).json({success:false , message :`No reservation with the id of ${req.params.id}`});
+         }
 
-        res.status(200).json({
+         res.status(200).json({
             success:true,
-            data: reservation
-        });
-    }catch(err){
-        console.log(err.stack);
-        return res.status(500).json({success:false,message:'Cannot find Reservation'});
-    }
+             data: reservation
+         });
+     }catch(err){
+         console.log(err.stack);
+         return res.status(500).json({success:false,message:'Cannot find Reservation'});
+     }
 
 }
 
